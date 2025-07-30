@@ -1,10 +1,13 @@
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
-local pastebinKeyURL = "https://pastebin.com/raw/BiVnd3Xc"
+local keySourceURL = "https://raw.githubusercontent.com/Pingz0/SilentScriptHub/main/3910.txt"
 
-local keyData
+local validKeys = {}
 pcall(function()
-    keyData = game:HttpGet(pastebinKeyURL)
+    local rawKeys = game:HttpGet(keySourceURL)
+    for key in string.gmatch(rawKeys, "[^\r\n]+") do
+        table.insert(validKeys, key)
+    end
 end)
 
 local Window = Rayfield:CreateWindow({
@@ -14,21 +17,15 @@ local Window = Rayfield:CreateWindow({
     ConfigurationSaving = {
         Enabled = false,
     },
-
-Discord = {
-      Enabled = true, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "eaf8h8cg4p", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = false -- Set this to false to make them join the discord every time they load it up
-   },
     KeySystem = true,
     KeySettings = {
-        Title = "Silent Key System",
-        Subtitle = "Enter the key to continue",
-        Note = "By Pingz0",
+        Title = "Silent Access",
+        Subtitle = "Enter your access code",
+        Note = "Join our Discord: discord.gg/eaf8h8cg4p",
         FileName = "SilentKey",
         SaveKey = false,
         GrabKeyFromSite = true,
-        Key = {keyData or "invalid_key"}
+        Key = validKeys
     }
 })
 
