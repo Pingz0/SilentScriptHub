@@ -16,7 +16,7 @@ local Window = Rayfield:CreateWindow({
     ConfigurationSaving = {
         Enabled = false,
     },
-    Theme = "Amethyst", -- ❗ direkt als String!
+    
     KeySystem = true,
     KeySettings = {
         Title = "Silent Access",
@@ -30,20 +30,6 @@ local Window = Rayfield:CreateWindow({
 })
 
 local MainTab = Window:CreateTab("Main", 4483362458)
-
-MainTab:CreateDropdown({
-    Name = "Select Theme",
-    Options = {"Default", "Dark", "Light", "Amethyst", "Midnight", "Serika", "SolarizedDark", "SolarizedLight"},
-    CurrentOption = "Amethyst",
-    Callback = function(selected)
-        Rayfield:LoadTheme(selected)
-        Rayfield:Notify({
-            Title = "Theme Updated",
-            Content = "Theme changed to " .. selected,
-            Duration = 3
-        })
-    end
-})
 
 -- Speed Slider
 MainTab:CreateSlider({
@@ -75,7 +61,7 @@ local FlySpeed = 2
 -- FlySpeed Slider
 MainTab:CreateSlider({
     Name = "Fly Speed",
-    Range = {1, 20},
+    Range = {1, 50},
     Increment = 1,
     Suffix = "x",
     CurrentValue = FlySpeed,
