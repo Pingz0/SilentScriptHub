@@ -1,8 +1,8 @@
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local keySourceURL = "https://raw.githubusercontent.com/Pingz0/SilentScriptHub/main/3910.txt"
-
 local validKeys = {}
+
 pcall(function()
     local rawKeys = game:HttpGet(keySourceURL)
     for key in string.gmatch(rawKeys, "[^\r\n]+") do
@@ -17,6 +17,7 @@ local Window = Rayfield:CreateWindow({
     ConfigurationSaving = {
         Enabled = false,
     },
+    Theme = Rayfield.Themes.Amethyst, -- Anfangs-Theme
     KeySystem = true,
     KeySettings = {
         Title = "Silent Access",
@@ -29,40 +30,26 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
--- ✅ Theme direkt nach dem Fenster laden
-Rayfield:LoadTheme(Rayfield.Themes.Amethyst)
-
--- 🔧 Main Tab + Dropdown zum Wechseln
+-- Main Tab
 local MainTab = Window:CreateTab("Main", 4483362458)
 
+-- 🎨 Theme Dropdown
 MainTab:CreateDropdown({
     Name = "Select Theme",
     Options = {"Default", "Dark", "Light", "Amethyst", "Midnight", "Serika", "SolarizedDark", "SolarizedLight"},
     CurrentOption = "Amethyst",
     Callback = function(selected)
         local themes = Rayfield.Themes
-        local themeMap = {
-            ["Default"] = themes.Default,
-            ["Dark"] = themes.Dark,
-            ["Light"] = themes.Light,
-            ["Amethyst"] = themes.Amethyst,
-            ["Midnight"] = themes.Midnight,
-            ["Serika"] = themes.Serika,
-            ["SolarizedDark"] = themes.SolarizedDark,
-            ["SolarizedLight"] = themes.SolarizedLight,
-        }
+        local selectedTheme = themes[selected] or themes.Default
+        Rayfield:LoadTheme(selectedTheme)
 
-        if themeMap[selected] then
-            Rayfield:LoadTheme(themeMap[selected])
-            Rayfield:Notify({
-                Title = "Theme Updated",
-                Content = "Theme changed to " .. selected,
-                Duration = 3
-            })
-        end
+        Rayfield:Notify({
+            Title = "Theme Updated",
+            Content = "Theme changed to " .. selected,
+            Duration = 3
+        })
     end
 })
-
 -- Speed Slider
 MainTab:CreateSlider({
     Name = "Speed Hack",
