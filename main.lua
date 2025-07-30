@@ -363,6 +363,36 @@ MainTab:CreateToggle({
     end,
 })
 
+local antiRagdollEnabled = false
+local antiRagdollConnection
+
+YourTab:CreateToggle({
+    Name = "Anti-Ragdoll",
+    CurrentValue = false,
+    Callback = function(state)
+        antiRagdollEnabled = state
+
+        if antiRagdollEnabled then
+            antiRagdollConnection = game:GetService("RunService").Heartbeat:Connect(function()
+                local char = game.Players.LocalPlayer.Character
+                if char then
+                    -- Remove common ragdoll constraints or states
+                    for _, v in pairs(char:GetDescendants()) do
+                        if v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") or v:IsA("Motor6D") then
+                            v:Destroy()
+                        end
+                        if v:IsA("BodyVelocity") or v:IsA("BodyGyro") or v:IsA("BodyAngularVelocity") then
+                            v:Destroy()
+                        end
+                    end
+                end
+            end)
+        elseif antiRagdollConnection then
+            antiRagdollConnection:Disconnect()
+        end
+    end,
+})
+
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
