@@ -10,13 +10,15 @@ pcall(function()
     end
 end)
 
+-- ⚠️ Nur das Theme-Feld eingefügt (z. B. "Amethyst")
 local Window = Rayfield:CreateWindow({
-    Name = "Hack V1",
+    Name = "Hack V1.2",
     LoadingTitle = "Loading...",
     LoadingSubtitle = "By Pingz0",
     ConfigurationSaving = {
         Enabled = false,
     },
+    Theme = Rayfield.Themes.Amethyst, -- Hier dein Standard-Theme (z. B. Amethyst)
     KeySystem = true,
     KeySettings = {
         Title = "Silent Access",
@@ -31,6 +33,34 @@ local Window = Rayfield:CreateWindow({
 
 -- Main Tab
 local MainTab = Window:CreateTab("Main", 4483362458)
+
+MainTab:CreateDropdown({
+    Name = "Select Theme",
+    Options = {"Default", "Dark", "Light", "Amethyst", "Midnight", "Serika", "SolarizedDark", "SolarizedLight"},
+    CurrentOption = "Amethyst",
+    Callback = function(selected)
+        local themes = Rayfield.Themes
+        local themeMap = {
+            ["Default"] = themes.Default,
+            ["Dark"] = themes.Dark,
+            ["Light"] = themes.Light,
+            ["Amethyst"] = themes.Amethyst,
+            ["Midnight"] = themes.Midnight,
+            ["Serika"] = themes.Serika,
+            ["SolarizedDark"] = themes.SolarizedDark,
+            ["SolarizedLight"] = themes.SolarizedLight,
+        }
+
+        if themeMap[selected] then
+            Rayfield:LoadTheme(themeMap[selected])
+            Rayfield:Notify({
+                Title = "Theme Updated",
+                Content = "Theme changed to " .. selected,
+                Duration = 3
+            })
+        end
+    end
+})
 
 -- Speed Slider
 MainTab:CreateSlider({
