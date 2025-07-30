@@ -16,7 +16,7 @@ local Window = Rayfield:CreateWindow({
     ConfigurationSaving = {
         Enabled = false,
     },
-    
+    Theme = "Amethyst"
     KeySystem = true,
     KeySettings = {
         Title = "Silent Access",
