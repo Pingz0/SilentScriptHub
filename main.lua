@@ -70,10 +70,12 @@ MainTab:CreateSlider({
     end,
 })
 
--- Fly 
+-- Fly (PC + Mobile)
 local flying = false
+local FlySpeed = 2 -- Du kannst die Geschwindigkeit anpassen
+
 MainTab:CreateButton({
-    Name = "Fly (Phone Doesn't Work)",
+    Name = "Fly (Mobile + PC)",
     Callback = function()
         local plr = game.Players.LocalPlayer
         local char = plr.Character or plr.CharacterAdded:Wait()
@@ -89,8 +91,13 @@ MainTab:CreateButton({
             bodyVel.velocity = Vector3.zero
             bodyVel.maxForce = Vector3.new(9e9, 9e9, 9e9)
 
+            local UIS = game:GetService("UserInputService")
+            local RunService = game:GetService("RunService")
+            local StarterGui = game:GetService("StarterGui")
+            local camera = workspace.CurrentCamera
+
             local conn
-            conn = game:GetService("RunService").RenderStepped:Connect(function()
+            conn = RunService.RenderStepped:Connect(function()
                 if not flying then
                     bodyGyro:Destroy()
                     bodyVel:Destroy()
@@ -98,19 +105,22 @@ MainTab:CreateButton({
                     return
                 end
 
-                bodyGyro.CFrame = workspace.CurrentCamera.CFrame
+                bodyGyro.CFrame = camera.CFrame
+                local moveDir = Vector3.zero
 
-                local direction = Vector3.zero
-                local camera = workspace.CurrentCamera
-                local UIS = game:GetService("UserInputService")
+                -- PC Movement
+                if UIS:IsKeyDown(Enum.KeyCode.W) then moveDir += camera.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.S) then moveDir -= camera.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.A) then moveDir -= camera.CFrame.RightVector end
+                if UIS:IsKeyDown(Enum.KeyCode.D) then moveDir += camera.CFrame.RightVector end
 
-                if UIS:IsKeyDown(Enum.KeyCode.W) then direction += camera.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.S) then direction -= camera.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.A) then direction -= camera.CFrame.RightVector end
-                if UIS:IsKeyDown(Enum.KeyCode.D) then direction += camera.CFrame.RightVector end
+                -- Mobile Movement
+                if UIS.TouchEnabled and UIS:GetLastInputType() == Enum.UserInputType.Touch then
+                    moveDir = plr.Character.Humanoid.MoveDirection
+                end
 
-                if direction.Magnitude > 0 then
-                    bodyVel.Velocity = direction.Unit * FlySpeed * 50 -- Geschwindigkeit hier angepasst
+                if moveDir.Magnitude > 0 then
+                    bodyVel.Velocity = moveDir.Unit * FlySpeed * 50
                 else
                     bodyVel.Velocity = Vector3.zero
                 end
