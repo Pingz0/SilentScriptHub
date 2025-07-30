@@ -10,7 +10,6 @@ pcall(function()
     end
 end)
 
--- ⚠️ Nur das Theme-Feld eingefügt (z. B. "Amethyst")
 local Window = Rayfield:CreateWindow({
     Name = "Hack V1.2",
     LoadingTitle = "Loading...",
@@ -18,7 +17,6 @@ local Window = Rayfield:CreateWindow({
     ConfigurationSaving = {
         Enabled = false,
     },
-    Theme = Rayfield.Themes.Amethyst, -- Hier dein Standard-Theme (z. B. Amethyst)
     KeySystem = true,
     KeySettings = {
         Title = "Silent Access",
@@ -31,7 +29,10 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
--- Main Tab
+-- ✅ Theme direkt nach dem Fenster laden
+Rayfield:LoadTheme(Rayfield.Themes.Amethyst)
+
+-- 🔧 Main Tab + Dropdown zum Wechseln
 local MainTab = Window:CreateTab("Main", 4483362458)
 
 MainTab:CreateDropdown({
