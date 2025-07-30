@@ -2,7 +2,6 @@ local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local keySourceURL = "https://raw.githubusercontent.com/Pingz0/SilentScriptHub/main/3910.txt"
 local validKeys = {}
-
 pcall(function()
     local rawKeys = game:HttpGet(keySourceURL)
     for key in string.gmatch(rawKeys, "[^\r\n]+") do
@@ -17,7 +16,7 @@ local Window = Rayfield:CreateWindow({
     ConfigurationSaving = {
         Enabled = false,
     },
-    Theme = Rayfield.Themes.Amethyst, -- Anfangs-Theme
+    Theme = "Amethyst", -- ❗ direkt als String!
     KeySystem = true,
     KeySettings = {
         Title = "Silent Access",
@@ -30,19 +29,14 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
--- Main Tab
 local MainTab = Window:CreateTab("Main", 4483362458)
 
--- 🎨 Theme Dropdown
 MainTab:CreateDropdown({
     Name = "Select Theme",
     Options = {"Default", "Dark", "Light", "Amethyst", "Midnight", "Serika", "SolarizedDark", "SolarizedLight"},
     CurrentOption = "Amethyst",
     Callback = function(selected)
-        local themes = Rayfield.Themes
-        local selectedTheme = themes[selected] or themes.Default
-        Rayfield:LoadTheme(selectedTheme)
-
+        Rayfield:LoadTheme(selected)
         Rayfield:Notify({
             Title = "Theme Updated",
             Content = "Theme changed to " .. selected,
@@ -50,6 +44,7 @@ MainTab:CreateDropdown({
         })
     end
 })
+
 -- Speed Slider
 MainTab:CreateSlider({
     Name = "Speed Hack",
