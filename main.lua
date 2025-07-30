@@ -393,6 +393,21 @@ YourTab:CreateToggle({
     end,
 })
 
+YourTab:CreateButton({
+    Name = "Become Invisible",
+    Callback = function()
+        local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+        for _, part in pairs(char:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.Transparency = 1
+                if part:FindFirstChild("face") then
+                    part.face:Destroy()
+                end
+            end
+        end
+    end
+})
+
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
