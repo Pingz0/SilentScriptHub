@@ -255,7 +255,7 @@ MainTab:CreateToggle({
 local invisible = false
 
 MainTab:CreateToggle({
-    Name = "Invisible Toggle (Others can't see you)",
+    Name = "Invisible Toggle",
     CurrentValue = false,
     Callback = function(state)
         local player = game.Players.LocalPlayer
@@ -266,8 +266,8 @@ MainTab:CreateToggle({
         for _, part in pairs(character:GetDescendants()) do
             if part:IsA("BasePart") then
                 if invisible then
-                    part.Transparency = 0.8
-                    part.LocalTransparencyModifier = 0.8
+                    part.Transparency = 0.5
+                    part.LocalTransparencyModifier = 0.5
                     part.CanCollide = false
                 else
                     part.Transparency = 0
