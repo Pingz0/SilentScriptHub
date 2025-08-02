@@ -269,19 +269,39 @@ MainTab:CreateToggle({
                     part.Transparency = 0.5
                     part.LocalTransparencyModifier = 0.5
                     part.CanCollide = false
+                    part.Reflectance = 0
+                    part.Material = Enum.Material.Plastic
                 else
                     part.Transparency = 0
                     part.LocalTransparencyModifier = 0
                     part.CanCollide = true
+                    part.Reflectance = 0
+                    part.Material = Enum.Material.Plastic
                 end
             elseif part:IsA("Decal") then
                 part.Transparency = invisible and 1 or 0
             end
         end
 
-        local face = character:FindFirstChild("Head") and character.Head:FindFirstChild("face")
-        if face then
-            face.Transparency = invisible and 1 or 0
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+        if humanoidRootPart then
+            if invisible then
+                humanoidRootPart.Transparency = 1
+                humanoidRootPart.LocalTransparencyModifier = 1
+                humanoidRootPart.CanCollide = false
+            else
+                humanoidRootPart.Transparency = 0
+                humanoidRootPart.LocalTransparencyModifier = 0
+                humanoidRootPart.CanCollide = true
+            end
+        end
+
+        local head = character:FindFirstChild("Head")
+        if head then
+            local face = head:FindFirstChild("face")
+            if face then
+                face.Transparency = invisible and 1 or 0
+            end
         end
     end
 })
