@@ -255,52 +255,24 @@ MainTab:CreateToggle({
 local invisible = false
 
 MainTab:CreateToggle({
-    Name = "Invisible Toggle",
+    Name = "Invisible [Beta]",
     CurrentValue = false,
     Callback = function(state)
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-
         invisible = state
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
 
-        for _, part in pairs(character:GetDescendants()) do
-            if part:IsA("BasePart") then
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
                 if invisible then
-                    part.Transparency = 0.5
-                    part.LocalTransparencyModifier = 0.5
-                    part.CanCollide = false
-                    part.Reflectance = 0
-                    part.Material = Enum.Material.Plastic
+                    part.Transparency = 1
+                    part.LocalTransparencyModifier = -0.25
                 else
                     part.Transparency = 0
                     part.LocalTransparencyModifier = 0
-                    part.CanCollide = true
-                    part.Reflectance = 0
-                    part.Material = Enum.Material.Plastic
                 end
             elseif part:IsA("Decal") then
                 part.Transparency = invisible and 1 or 0
-            end
-        end
-
-        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-        if humanoidRootPart then
-            if invisible then
-                humanoidRootPart.Transparency = 1
-                humanoidRootPart.LocalTransparencyModifier = 1
-                humanoidRootPart.CanCollide = false
-            else
-                humanoidRootPart.Transparency = 0
-                humanoidRootPart.LocalTransparencyModifier = 0
-                humanoidRootPart.CanCollide = true
-            end
-        end
-
-        local head = character:FindFirstChild("Head")
-        if head then
-            local face = head:FindFirstChild("face")
-            if face then
-                face.Transparency = invisible and 1 or 0
             end
         end
     end
