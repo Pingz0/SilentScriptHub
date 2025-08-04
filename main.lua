@@ -10,7 +10,7 @@ pcall(function()
 end)
 
 local Window = Rayfield:CreateWindow({
-    Name = "Hack V1.2",
+    Name = "SilentHub V1.2",
     LoadingTitle = "Loading...",
     LoadingSubtitle = "By Pingz0",
     ConfigurationSaving = {
@@ -71,20 +71,10 @@ MainTab:CreateSlider({
 
 local flying = false
 local FlySpeed = 2
-local flyConnection
-
-MainTab:CreateSlider({
-    Name = "Fly Speed",
-    Range = {1, 10},
-    Increment = 1,
-    CurrentValue = 2,
-    Callback = function(Value)
-        FlySpeed = Value
-    end
-})
+local flyConnection,
 
 MainTab:CreateToggle({
-    Name = "Fly (Joystick & Camera Direction)",
+    Name = "Fly (Phone On Beta)",
     CurrentValue = false,
     Callback = function(Value)
         flying = Value
