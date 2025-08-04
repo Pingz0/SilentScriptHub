@@ -69,34 +69,36 @@ MainTab:CreateSlider({
     end,
 })
 
--- Fly (PC + Mobile)
 local flying = false
-local FlySpeed = 2 -- Du kannst die Geschwindigkeit anpassen
+local FlySpeed = 2 -- Du kannst die Geschwindigkeit ändern
 
 MainTab:CreateButton({
-    Name = "Fly (Mobile + PC)",
+    Name = "Fly (Freecam PC+Mobile)",
     Callback = function()
         local plr = game.Players.LocalPlayer
         local char = plr.Character or plr.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
+        local cam = workspace.CurrentCamera
+        local UIS = game:GetService("UserInputService")
+        local RS = game:GetService("RunService")
 
         flying = not flying
 
         if flying then
-            local bodyGyro = Instance.new("BodyGyro", hrp)
-            local bodyVel = Instance.new("BodyVelocity", hrp)
-            bodyGyro.P = 9e4
-            bodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-            bodyVel.velocity = Vector3.zero
-            bodyVel.maxForce = Vector3.new(9e9, 9e9, 9e9)
+            local bodyGyro = Instance.new("BodyGyro")
+            local bodyVel = Instance.new("BodyVelocity")
 
-            local UIS = game:GetService("UserInputService")
-            local RunService = game:GetService("RunService")
-            local StarterGui = game:GetService("StarterGui")
-            local camera = workspace.CurrentCamera
+            bodyGyro.P = 9e4
+            bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+            bodyGyro.CFrame = cam.CFrame
+            bodyGyro.Parent = hrp
+
+            bodyVel.Velocity = Vector3.zero
+            bodyVel.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+            bodyVel.Parent = hrp
 
             local conn
-            conn = RunService.RenderStepped:Connect(function()
+            conn = RS.RenderStepped:Connect(function()
                 if not flying then
                     bodyGyro:Destroy()
                     bodyVel:Destroy()
@@ -104,22 +106,30 @@ MainTab:CreateButton({
                     return
                 end
 
-                bodyGyro.CFrame = camera.CFrame
-                local moveDir = Vector3.zero
+                bodyGyro.CFrame = cam.CFrame
+                local moveVec = Vector3.zero
 
-                -- PC Movement
-                if UIS:IsKeyDown(Enum.KeyCode.W) then moveDir += camera.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.S) then moveDir -= camera.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.A) then moveDir -= camera.CFrame.RightVector end
-                if UIS:IsKeyDown(Enum.KeyCode.D) then moveDir += camera.CFrame.RightVector end
-
-                -- Mobile Movement
-                if UIS.TouchEnabled and UIS:GetLastInputType() == Enum.UserInputType.Touch then
-                    moveDir = plr.Character.Humanoid.MoveDirection
+                if UIS.TouchEnabled then
+                    -- Mobile: verwende Humanoid.MoveDirection
+                    local humanoid = char:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        moveVec = humanoid.MoveDirection
+                        if moveVec.Magnitude > 0 then
+                            moveVec = cam.CFrame:VectorToWorldSpace(moveVec).Unit
+                        end
+                    end
+                else
+                    -- PC: WASD + Space/Ctrl
+                    if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec += cam.CFrame.LookVector end
+                    if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec -= cam.CFrame.LookVector end
+                    if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec -= cam.CFrame.RightVector end
+                    if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec += cam.CFrame.RightVector end
+                    if UIS:IsKeyDown(Enum.KeyCode.Space) then moveVec += cam.CFrame.UpVector end
+                    if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then moveVec -= cam.CFrame.UpVector end
                 end
 
-                if moveDir.Magnitude > 0 then
-                    bodyVel.Velocity = moveDir.Unit * FlySpeed * 50
+                if moveVec.Magnitude > 0 then
+                    bodyVel.Velocity = moveVec.Unit * FlySpeed * 50
                 else
                     bodyVel.Velocity = Vector3.zero
                 end
