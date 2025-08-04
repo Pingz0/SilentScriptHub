@@ -71,18 +71,30 @@ MainTab:CreateSlider({
 
 local flying = false
 local FlySpeed = 2
+local flyConnection
 
-MainTab:CreateButton({
-    Name = "Fly (Mobile + PC)",
-    Callback = function()
+MainTab:CreateSlider({
+    Name = "Fly Speed",
+    Range = {1, 10},
+    Increment = 1,
+    CurrentValue = 2,
+    Callback = function(Value)
+        FlySpeed = Value
+    end
+})
+
+MainTab:CreateToggle({
+    Name = "Fly (Joystick & Camera Direction)",
+    CurrentValue = false,
+    Callback = function(Value)
+        flying = Value
+
         local plr = game.Players.LocalPlayer
         local char = plr.Character or plr.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
         local cam = workspace.CurrentCamera
         local UIS = game:GetService("UserInputService")
         local RS = game:GetService("RunService")
-
-        flying = not flying
 
         if flying then
             local bg = Instance.new("BodyGyro", hrp)
@@ -91,27 +103,32 @@ MainTab:CreateButton({
             bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
             bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
 
-            local conn
-            conn = RS.RenderStepped:Connect(function()
-                if not flying or not char or not char:FindFirstChild("Humanoid") then
+            flyConnection = RS.RenderStepped:Connect(function()
+                if not flying then
                     bg:Destroy()
                     bv:Destroy()
-                    if conn then conn:Disconnect() end
+                    flyConnection:Disconnect()
                     return
                 end
 
-                local dir = Vector3.zero
                 bg.CFrame = cam.CFrame
+                local moveDir = char.Humanoid.MoveDirection
 
-                -- Mobile & PC Movement durch Humanoid.MoveDirection
-                local move = char.Humanoid.MoveDirection
-                if move.Magnitude > 0 then
-                    -- Richtung an Kamera ausrichten (Freecam-Stil)
-                    dir = cam.CFrame:VectorToWorldSpace(move)
+                -- Live Kameraausrichtung + Joystick
+                if moveDir.Magnitude > 0 then
+                    local flyDirection = cam.CFrame:VectorToWorldSpace(moveDir)
+                    bv.Velocity = flyDirection.Unit * FlySpeed * 50
+                else
+                    bv.Velocity = Vector3.zero
                 end
-
-                bv.Velocity = dir.Magnitude > 0 and dir.Unit * FlySpeed * 50 or Vector3.zero
             end)
+        else
+            if flyConnection then flyConnection:Disconnect() end
+            for _, v in ipairs(hrp:GetChildren()) do
+                if v:IsA("BodyGyro") or v:IsA("BodyVelocity") then
+                    v:Destroy()
+                end
+            end
         end
     end
 })
