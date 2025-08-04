@@ -70,10 +70,10 @@ MainTab:CreateSlider({
 })
 
 local flying = false
-local FlySpeed = 2 -- Du kannst die Geschwindigkeit ändern
+local FlySpeed = 2
 
 MainTab:CreateButton({
-    Name = "Fly (Freecam PC+Mobile)",
+    Name = "Fly (Mobile + PC)",
     Callback = function()
         local plr = game.Players.LocalPlayer
         local char = plr.Character or plr.CharacterAdded:Wait()
@@ -85,54 +85,32 @@ MainTab:CreateButton({
         flying = not flying
 
         if flying then
-            local bodyGyro = Instance.new("BodyGyro")
-            local bodyVel = Instance.new("BodyVelocity")
-
-            bodyGyro.P = 9e4
-            bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-            bodyGyro.CFrame = cam.CFrame
-            bodyGyro.Parent = hrp
-
-            bodyVel.Velocity = Vector3.zero
-            bodyVel.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-            bodyVel.Parent = hrp
+            local bg = Instance.new("BodyGyro", hrp)
+            local bv = Instance.new("BodyVelocity", hrp)
+            bg.P = 9e4
+            bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+            bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
 
             local conn
             conn = RS.RenderStepped:Connect(function()
-                if not flying then
-                    bodyGyro:Destroy()
-                    bodyVel:Destroy()
-                    conn:Disconnect()
+                if not flying or not char or not char:FindFirstChild("Humanoid") then
+                    bg:Destroy()
+                    bv:Destroy()
+                    if conn then conn:Disconnect() end
                     return
                 end
 
-                bodyGyro.CFrame = cam.CFrame
-                local moveVec = Vector3.zero
+                local dir = Vector3.zero
+                bg.CFrame = cam.CFrame
 
-                if UIS.TouchEnabled then
-                    -- Mobile: verwende Humanoid.MoveDirection
-                    local humanoid = char:FindFirstChildOfClass("Humanoid")
-                    if humanoid then
-                        moveVec = humanoid.MoveDirection
-                        if moveVec.Magnitude > 0 then
-                            moveVec = cam.CFrame:VectorToWorldSpace(moveVec).Unit
-                        end
-                    end
-                else
-                    -- PC: WASD + Space/Ctrl
-                    if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec += cam.CFrame.LookVector end
-                    if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec -= cam.CFrame.LookVector end
-                    if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec -= cam.CFrame.RightVector end
-                    if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec += cam.CFrame.RightVector end
-                    if UIS:IsKeyDown(Enum.KeyCode.Space) then moveVec += cam.CFrame.UpVector end
-                    if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then moveVec -= cam.CFrame.UpVector end
+                -- Mobile & PC Movement durch Humanoid.MoveDirection
+                local move = char.Humanoid.MoveDirection
+                if move.Magnitude > 0 then
+                    -- Richtung an Kamera ausrichten (Freecam-Stil)
+                    dir = cam.CFrame:VectorToWorldSpace(move)
                 end
 
-                if moveVec.Magnitude > 0 then
-                    bodyVel.Velocity = moveVec.Unit * FlySpeed * 50
-                else
-                    bodyVel.Velocity = Vector3.zero
-                end
+                bv.Velocity = dir.Magnitude > 0 and dir.Unit * FlySpeed * 50 or Vector3.zero
             end)
         end
     end
