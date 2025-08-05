@@ -10,16 +10,16 @@ pcall(function()
 end)
 
 local Window = Rayfield:CreateWindow({
-    Name = "SilentHub V1.2",
+    Name = "🔥SilentHub V1.3🔥",
     LoadingTitle = "Loading...",
-    LoadingSubtitle = "By Pingz0",
+    LoadingSubtitle = "🔥By Pingz0🔥",
     ConfigurationSaving = {
         Enabled = false,
     },
     KeySystem = true,
     KeySettings = {
         Title = "Silent Access",
-        Subtitle = "Enter your access code",
+        Subtitle = "Enter your Key code",
         Note = "Join our Discord: discord.gg/eaf8h8cg4p",
         FileName = "SilentKey",
         SaveKey = false,
@@ -247,31 +247,6 @@ MainTab:CreateToggle({
     end
 })
 
-local invisible = false
-
-MainTab:CreateToggle({
-    Name = "Invisible [Beta]",
-    CurrentValue = false,
-    Callback = function(state)
-        invisible = state
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-
-        for _, part in pairs(char:GetDescendants()) do
-            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                if invisible then
-                    part.Transparency = 1
-                    part.LocalTransparencyModifier = -0.25
-                else
-                    part.Transparency = 0
-                    part.LocalTransparencyModifier = 0
-                end
-            elseif part:IsA("Decal") then
-                part.Transparency = invisible and 1 or 0
-            end
-        end
-    end
-})
 
 local NoFallEnabled = false
 local NoFallConnections = {}
