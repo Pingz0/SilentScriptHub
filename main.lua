@@ -16,7 +16,7 @@ local Window = Rayfield:CreateWindow({
     ConfigurationSaving = {
         Enabled = false,
     },
-    KeySystem = false,
+    KeySystem = true,
     KeySettings = {
         Title = "Silent Access",
         Subtitle = "Enter your Key code",
@@ -526,4 +526,62 @@ Players.PlayerRemoving:Connect(function()
    task.wait(0.2)
    UpdateDropdown()
 end)
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local customSpawnPosition = nil
+
+local function setSpawnPoint()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        customSpawnPosition = player.Character.HumanoidRootPart.Position
+        Rayfield:Notify({
+            Title = "Teleportpoint Set",
+            Content = "Position: " .. tostring(customSpawnPosition),
+            Duration = 5,
+            Image = 4483362458
+        })
+    else
+        Rayfield:Notify({
+            Title = "Error",
+            Content = "If you see this please report it in our Dc!",
+            Duration = 5,
+            Image = 4483362458
+        })
+    end
+end
+
+player.CharacterAdded:Connect(function(character)
+    if customSpawnPosition then
+        local hrp = character:WaitForChild("HumanoidRootPart")
+        hrp.CFrame = CFrame.new(customSpawnPosition + Vector3.new(0, 5, 0))
+    end
+end)
+
+Tab:CreateButton({
+    Name = "Set Teleportpoint (Changes Your Spawn point)",
+    Callback = setSpawnPoint
+})
+
+
+Tab:CreateButton({
+    Name = "Teleport To TpPoint",
+    Callback = function()
+        if customSpawnPosition and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(customSpawnPosition + Vector3.new(0, 5, 0))
+            Rayfield:Notify({
+                Title = "Teleported!",
+                Content = "You have been moved to your saved Teleportpoint.",
+                Duration = 4,
+                Image = 4483362458
+            })
+        else
+            Rayfield:Notify({
+                Title = "Teleport Failed",
+                Content = "Make sure you set a Teleportpoint first.",
+                Duration = 4,
+                Image = 4483362458
+            })
+        end
+    end
+})
 
