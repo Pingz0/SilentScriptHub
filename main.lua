@@ -71,7 +71,7 @@ MainTab:CreateSlider({
 
 local flying = false
 local FlySpeed = 2
-local flyConnection,
+local flyConnection
 
 MainTab:CreateToggle({
     Name = "Fly (Phone On Beta)",
