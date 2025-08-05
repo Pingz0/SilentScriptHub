@@ -527,11 +527,6 @@ Players.PlayerRemoving:Connect(function()
    UpdateDropdown()
 end)
 
-TeleportTab:CreateButton({
-    Name = "Set TPpoint",
-    Callback = setSpawnPoint
-})
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local customSpawnPosition = nil
@@ -565,21 +560,6 @@ end)
 TeleportTab:CreateButton({
     Name = "Set TPpoint",
     Callback = setSpawnPoint
-})
-
-TeleportTab:CreateButton({
-    Name = "Respawn",
-    Callback = function()
-        if player.Character then
-            Rayfield:Notify({
-                Title = "Respawning...",
-                Content = "You will respawn at your saved spawnpoint.",
-                Duration = 4,
-                Image = 4483362458
-            })
-            player.Character:BreakJoints()
-        end
-    end
 })
 
 TeleportTab:CreateButton({
