@@ -535,15 +535,15 @@ local function setSpawnPoint()
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         customSpawnPosition = player.Character.HumanoidRootPart.Position
         Rayfield:Notify({
-            Title = "Teleportpoint Set",
+            Title = "TPpoint Set",
             Content = "Position: " .. tostring(customSpawnPosition),
             Duration = 5,
             Image = 4483362458
         })
     else
         Rayfield:Notify({
-            Title = "Error",
-            Content = "If you see this please report it in our Dc!",
+            Title = "Please Report in Our Dc if this is shown",
+            Content = "Report this in our dc",
             Duration = 5,
             Image = 4483362458
         })
@@ -558,30 +558,43 @@ player.CharacterAdded:Connect(function(character)
 end)
 
 Tab:CreateButton({
-    Name = "Set Teleportpoint (Changes Your Spawn point)",
+    Name = "Set TPpoint",
     Callback = setSpawnPoint
 })
 
+Tab:CreateButton({
+    Name = "Respawn",
+    Callback = function()
+        if player.Character then
+            Rayfield:Notify({
+                Title = "Respawning...",
+                Content = "You will respawn at your saved spawnpoint.",
+                Duration = 4,
+                Image = 4483362458
+            })
+            player.Character:BreakJoints()
+        end
+    end
+})
 
 Tab:CreateButton({
-    Name = "Teleport To TpPoint",
+    Name = "Teleport to TPpoint",
     Callback = function()
         if customSpawnPosition and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             player.Character.HumanoidRootPart.CFrame = CFrame.new(customSpawnPosition + Vector3.new(0, 5, 0))
             Rayfield:Notify({
                 Title = "Teleported!",
-                Content = "You have been moved to your saved Teleportpoint.",
+                Content = "You have been moved to your saved TPpoint.",
                 Duration = 4,
                 Image = 4483362458
             })
         else
             Rayfield:Notify({
                 Title = "Teleport Failed",
-                Content = "Make sure you set a Teleportpoint first.",
+                Content = "Make sure you set a TPpointfirst.",
                 Duration = 4,
                 Image = 4483362458
             })
         end
     end
 })
-
