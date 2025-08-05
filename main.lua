@@ -532,6 +532,56 @@ TeleportTab:CreateButton({
     Callback = setSpawnPoint
 })
 
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local customSpawnPosition = nil
+
+local function setSpawnPoint()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        customSpawnPosition = player.Character.HumanoidRootPart.Position
+        Rayfield:Notify({
+            Title = "TPpoint Set",
+            Content = "Position: " .. tostring(customSpawnPosition),
+            Duration = 5,
+            Image = 4483362458
+        })
+    else
+        Rayfield:Notify({
+            Title = "Please Report in Our Dc if this is shown",
+            Content = "HumanoidRootPart not found!",
+            Duration = 5,
+            Image = 4483362458
+        })
+    end
+end
+
+player.CharacterAdded:Connect(function(character)
+    if customSpawnPosition then
+        local hrp = character:WaitForChild("HumanoidRootPart")
+        hrp.CFrame = CFrame.new(customSpawnPosition + Vector3.new(0, 5, 0))
+    end
+end)
+
+TeleportTab:CreateButton({
+    Name = "Set TPpoint",
+    Callback = setSpawnPoint
+})
+
+TeleportTab:CreateButton({
+    Name = "Respawn",
+    Callback = function()
+        if player.Character then
+            Rayfield:Notify({
+                Title = "Respawning...",
+                Content = "You will respawn at your saved spawnpoint.",
+                Duration = 4,
+                Image = 4483362458
+            })
+            player.Character:BreakJoints()
+        end
+    end
+})
+
 TeleportTab:CreateButton({
     Name = "Teleport to TPpoint",
     Callback = function()
@@ -546,7 +596,7 @@ TeleportTab:CreateButton({
         else
             Rayfield:Notify({
                 Title = "Teleport Failed",
-                Content = "Make sure you set a TPpoint first.",
+                Content = "Make sure you set a TPpointfirst.",
                 Duration = 4,
                 Image = 4483362458
             })
