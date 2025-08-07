@@ -54,10 +54,8 @@ MainTab:CreateSlider({
     end,
 })
 
--- FlySpeed 
-local FlySpeed = 2 
+local FlySpeed = 2
 
--- FlySpeed Slider
 MainTab:CreateSlider({
     Name = "Fly Speed",
     Range = {1, 50},
@@ -69,8 +67,6 @@ MainTab:CreateSlider({
     end,
 })
 
-
-
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local rootPart = character:WaitForChild("HumanoidRootPart")
@@ -79,7 +75,6 @@ local runService = game:GetService("RunService")
 local cam = workspace.CurrentCamera
 
 local flying = false
-
 local BodyVelocity
 local BodyGyro
 
@@ -114,11 +109,11 @@ local function updateFly()
     if userInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir = moveDir + Vector3.new(0,1,0) end
     if userInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir = moveDir - Vector3.new(0,1,0) end
     if moveDir.Magnitude > 0 then moveDir = moveDir.Unit end
-    BodyVelocity.Velocity = moveDir * FlySpeed
+    BodyVelocity.Velocity = moveDir * FlySpeed * 16 -- Multiply by 16 studs/sec roughly for normal walking speed ~32
     BodyGyro.CFrame = CFrame.new(rootPart.Position, rootPart.Position + cam.CFrame.LookVector)
 end
 
-local FlyButton = Window:CreateButton({
+MainTab:CreateButton({
     Name = "Toggle Fly",
     Callback = function()
         if flying then
@@ -126,7 +121,7 @@ local FlyButton = Window:CreateButton({
         else
             startFly()
         end
-    end
+    end,
 })
 
 runService.Heartbeat:Connect(function()
