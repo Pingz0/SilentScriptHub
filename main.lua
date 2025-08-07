@@ -70,72 +70,54 @@ MainTab:CreateSlider({
 })
 
 local flying = false
-local speed = 2
-local UIS = game:GetService("UserInputService")
-local RS = game:GetService("RunService")
-local plr = game.Players.LocalPlayer
-local char = plr.Character or plr.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
-
-local bodyGyro
-local bodyVel
-local flyConnection
-
-local function startFly()
-    bodyGyro = Instance.new("BodyGyro", hrp)
-    bodyGyro.P = 9e4
-    bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-    bodyGyro.CFrame = workspace.CurrentCamera.CFrame
-
-    bodyVel = Instance.new("BodyVelocity", hrp)
-    bodyVel.Velocity = Vector3.zero
-    bodyVel.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-
-    flyConnection = RS.RenderStepped:Connect(function()
-        local cam = workspace.CurrentCamera
-        local moveVec = Vector3.zero
-
-        if UIS:IsKeyDown(Enum.KeyCode.W) then
-            moveVec += cam.CFrame.LookVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.S) then
-            moveVec -= cam.CFrame.LookVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.A) then
-            moveVec -= cam.CFrame.RightVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.D) then
-            moveVec += cam.CFrame.RightVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.Space) then
-            moveVec += cam.CFrame.UpVector
-        end
-        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then
-            moveVec -= cam.CFrame.UpVector
-        end
-
-        bodyGyro.CFrame = cam.CFrame
-        bodyVel.Velocity = moveVec.Unit * speed * 50
-    end)
-end
-
-local function stopFly()
-    if flyConnection then flyConnection:Disconnect() end
-    if bodyGyro then bodyGyro:Destroy() end
-    if bodyVel then bodyVel:Destroy() end
-end
-
-UIS.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if input.KeyCode == Enum.KeyCode.F then
+-- Fly 
+local flying = false
+MainTab:CreateButton({
+    Name = "Fly (Phone Doesn't Work)",
+    Callback = function()
+        local plr = game.Players.LocalPlayer
+        local char = plr.Character or plr.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+ 
         flying = not flying
+ 
         if flying then
-            startFly()
-        else
-            stopFly()
+            local bodyGyro = Instance.new("BodyGyro", hrp)
+            local bodyVel = Instance.new("BodyVelocity", hrp)
+            bodyGyro.P = 9e4
+            bodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+            bodyVel.velocity = Vector3.zero
+            bodyVel.maxForce = Vector3.new(9e9, 9e9, 9e9)
+ 
+            local conn
+            conn = game:GetService("RunService").RenderStepped:Connect(function()
+                if not flying then
+                    bodyGyro:Destroy()
+                    bodyVel:Destroy()
+                    conn:Disconnect()
+                    return
+                end
+ 
+                bodyGyro.CFrame = workspace.CurrentCamera.CFrame
+ 
+                local direction = Vector3.zero
+                local camera = workspace.CurrentCamera
+                local UIS = game:GetService("UserInputService")
+ 
+                if UIS:IsKeyDown(Enum.KeyCode.W) then direction += camera.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.S) then direction -= camera.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.A) then direction -= camera.CFrame.RightVector end
+                if UIS:IsKeyDown(Enum.KeyCode.D) then direction += camera.CFrame.RightVector end
+ 
+                if direction.Magnitude > 0 then
+                    bodyVel.Velocity = direction.Unit * FlySpeed * 50 -- Geschwindigkeit hier angepasst
+                else
+                    bodyVel.Velocity = Vector3.zero
+                end
+            end)
         end
     end
-end)
+})
 -- NoClip
 MainTab:CreateToggle({
     Name = "NoClip",
