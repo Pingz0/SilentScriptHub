@@ -69,55 +69,73 @@ MainTab:CreateSlider({
     end,
 })
 
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+local userInputService = game:GetService("UserInputService")
+local runService = game:GetService("RunService")
+local cam = workspace.CurrentCamera
+
 local flying = false
--- Fly 
-local flying = false
-MainTab:CreateButton({
-    Name = "Fly (Phone Doesn't Work)",
-    Callback = function()
-        local plr = game.Players.LocalPlayer
-        local char = plr.Character or plr.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
- 
-        flying = not flying
- 
-        if flying then
-            local bodyGyro = Instance.new("BodyGyro", hrp)
-            local bodyVel = Instance.new("BodyVelocity", hrp)
-            bodyGyro.P = 9e4
-            bodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-            bodyVel.velocity = Vector3.zero
-            bodyVel.maxForce = Vector3.new(9e9, 9e9, 9e9)
- 
-            local conn
-            conn = game:GetService("RunService").RenderStepped:Connect(function()
-                if not flying then
-                    bodyGyro:Destroy()
-                    bodyVel:Destroy()
-                    conn:Disconnect()
-                    return
-                end
- 
-                bodyGyro.CFrame = workspace.CurrentCamera.CFrame
- 
-                local direction = Vector3.zero
-                local camera = workspace.CurrentCamera
-                local UIS = game:GetService("UserInputService")
- 
-                if UIS:IsKeyDown(Enum.KeyCode.W) then direction += camera.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.S) then direction -= camera.CFrame.LookVector end
-                if UIS:IsKeyDown(Enum.KeyCode.A) then direction -= camera.CFrame.RightVector end
-                if UIS:IsKeyDown(Enum.KeyCode.D) then direction += camera.CFrame.RightVector end
- 
-                if direction.Magnitude > 0 then
-                    bodyVel.Velocity = direction.Unit * FlySpeed * 50 -- Geschwindigkeit hier angepasst
-                else
-                    bodyVel.Velocity = Vector3.zero
-                end
-            end)
+local speed = 50
+
+local BodyVelocity
+local BodyGyro
+
+local function startFly()
+    if flying then return end
+    flying = true
+    BodyVelocity = Instance.new("BodyVelocity")
+    BodyVelocity.MaxForce = Vector3.new(1e5,1e5,1e5)
+    BodyVelocity.Velocity = Vector3.new(0,0,0)
+    BodyVelocity.Parent = rootPart
+
+    BodyGyro = Instance.new("BodyGyro")
+    BodyGyro.MaxTorque = Vector3.new(1e5,1e5,1e5)
+    BodyGyro.CFrame = rootPart.CFrame
+    BodyGyro.Parent = rootPart
+end
+
+local function stopFly()
+    if not flying then return end
+    flying = false
+    if BodyVelocity then BodyVelocity:Destroy() BodyVelocity = nil end
+    if BodyGyro then BodyGyro:Destroy() BodyGyro = nil end
+end
+
+local function updateFly()
+    if not flying then return end
+    local moveDir = Vector3.new()
+    if userInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + cam.CFrame.LookVector end
+    if userInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - cam.CFrame.LookVector end
+    if userInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - cam.CFrame.RightVector end
+    if userInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + cam.CFrame.RightVector end
+    if userInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir = moveDir + Vector3.new(0,1,0) end
+    if userInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir = moveDir - Vector3.new(0,1,0) end
+    if moveDir.Magnitude > 0 then moveDir = moveDir.Unit end
+    BodyVelocity.Velocity = moveDir * speed
+    BodyGyro.CFrame = CFrame.new(rootPart.Position, rootPart.Position + cam.CFrame.LookVector)
+end
+
+local FlyToggle = Window:CreateToggle({
+    Name = "Fly",
+    CurrentValue = false,
+    Flag = "FlyToggle",
+    Callback = function(value)
+        if value then
+            startFly()
+        else
+            stopFly()
         end
     end
 })
+
+runService.Heartbeat:Connect(function()
+    if flying then
+        updateFly()
+    end
+end)
+
 -- NoClip
 MainTab:CreateToggle({
     Name = "NoClip",
