@@ -70,59 +70,72 @@ MainTab:CreateSlider({
 })
 
 local flying = false
-local FlySpeed = 2
+local speed = 2
+local UIS = game:GetService("UserInputService")
+local RS = game:GetService("RunService")
+local plr = game.Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+local bodyGyro
+local bodyVel
 local flyConnection
 
-MainTab:CreateToggle({
-    Name = "Fly (Phone On Beta)",
-    CurrentValue = false,
-    Callback = function(Value)
-        flying = Value
+local function startFly()
+    bodyGyro = Instance.new("BodyGyro", hrp)
+    bodyGyro.P = 9e4
+    bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+    bodyGyro.CFrame = workspace.CurrentCamera.CFrame
 
-        local plr = game.Players.LocalPlayer
-        local char = plr.Character or plr.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
+    bodyVel = Instance.new("BodyVelocity", hrp)
+    bodyVel.Velocity = Vector3.zero
+    bodyVel.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+
+    flyConnection = RS.RenderStepped:Connect(function()
         local cam = workspace.CurrentCamera
-        local UIS = game:GetService("UserInputService")
-        local RS = game:GetService("RunService")
+        local moveVec = Vector3.zero
 
+        if UIS:IsKeyDown(Enum.KeyCode.W) then
+            moveVec += cam.CFrame.LookVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then
+            moveVec -= cam.CFrame.LookVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then
+            moveVec -= cam.CFrame.RightVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then
+            moveVec += cam.CFrame.RightVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.Space) then
+            moveVec += cam.CFrame.UpVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then
+            moveVec -= cam.CFrame.UpVector
+        end
+
+        bodyGyro.CFrame = cam.CFrame
+        bodyVel.Velocity = moveVec.Unit * speed * 50
+    end)
+end
+
+local function stopFly()
+    if flyConnection then flyConnection:Disconnect() end
+    if bodyGyro then bodyGyro:Destroy() end
+    if bodyVel then bodyVel:Destroy() end
+end
+
+UIS.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.KeyCode == Enum.KeyCode.F then
+        flying = not flying
         if flying then
-            local bg = Instance.new("BodyGyro", hrp)
-            local bv = Instance.new("BodyVelocity", hrp)
-            bg.P = 9e4
-            bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-            bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-
-            flyConnection = RS.RenderStepped:Connect(function()
-                if not flying then
-                    bg:Destroy()
-                    bv:Destroy()
-                    flyConnection:Disconnect()
-                    return
-                end
-
-                bg.CFrame = cam.CFrame
-                local moveDir = char.Humanoid.MoveDirection
-
-                -- Live Kameraausrichtung + Joystick
-                if moveDir.Magnitude > 0 then
-                    local flyDirection = cam.CFrame:VectorToWorldSpace(moveDir)
-                    bv.Velocity = flyDirection.Unit * FlySpeed * 50
-                else
-                    bv.Velocity = Vector3.zero
-                end
-            end)
+            startFly()
         else
-            if flyConnection then flyConnection:Disconnect() end
-            for _, v in ipairs(hrp:GetChildren()) do
-                if v:IsA("BodyGyro") or v:IsA("BodyVelocity") then
-                    v:Destroy()
-                end
-            end
+            stopFly()
         end
     end
-})
-
+end)
 -- NoClip
 MainTab:CreateToggle({
     Name = "NoClip",
