@@ -22,7 +22,7 @@ local Window = Rayfield:CreateWindow({
         Subtitle = "Enter your Key code",
         Note = "Join our Discord: discord.gg/eaf8h8cg4p",
         FileName = "SilentKey",
-        SaveKey = false,
+        SaveKey = true,
         GrabKeyFromSite = false,
         Key = validKeys
     }
