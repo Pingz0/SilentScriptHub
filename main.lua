@@ -16,7 +16,7 @@ local Window = Rayfield:CreateWindow({
     ConfigurationSaving = {
         Enabled = false,
     },
-    KeySystem = true,
+    KeySystem = false,
     KeySettings = {
         Title = "Silent Access",
         Subtitle = "Enter your Key code",
