@@ -10,7 +10,7 @@ pcall(function()
 end)
 
 local Window = Rayfield:CreateWindow({
-    Name = "🔥SilentHub V1.3🔥",
+    Name = "🔥SilentHub V1.4🔥",
     LoadingTitle = "Loading...",
     LoadingSubtitle = "🔥By Pingz0🔥",
     ConfigurationSaving = {
